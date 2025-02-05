@@ -3,7 +3,7 @@ import re
 from bs4 import BeautifulSoup
 from openai import OpenAI
 
-client = OpenAI(api_key="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",
+client = OpenAI(api_key="API key",
                 base_url="https://openrouter.ai/api/v1")
 
 # Get stock ticker input
