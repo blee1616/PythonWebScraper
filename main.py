@@ -1,50 +1,102 @@
 import requests
 import re
+import matplotlib.pyplot as plt
+import pandas as pd
 from bs4 import BeautifulSoup
 from openai import OpenAI
+from textblob import TextBlob
 
-client = OpenAI(api_key="API key",
-                base_url="https://openrouter.ai/api/v1")
+client = OpenAI(api_key="API key", base_url="https://openrouter.ai/api/v1")
 
-# Get stock ticker input
-ticker = input("Enter the stock ticker symbol: ").upper()
-url = f"https://www.finance.yahoo.com/quote/{ticker}/"
-
-# Fetch the webpage
-response = requests.get(url)
-
-# Regex to clean HTML tags
 CLEANR = re.compile('<.*?>')
 
-def create_rankings(articles, ticker):
-    """Sends one API request to rank multiple articles at once."""
-    article_text = "\n".join([f"{i+1}. {a}" for i, a in enumerate(articles)])
+
+def fetch_stock_price(ticker):
+    """Fetches the latest stock price from Yahoo Finance."""
+    url = f"https://finance.yahoo.com/quote/{ticker}/"
+    response = requests.get(url)
     
+    if response.status_code == 200:
+        soup = BeautifulSoup(response.content, "html.parser")
+        price_tag = soup.find('fin-streamer', {'data-field': 'regularMarketPrice'})
+        if price_tag:
+            return price_tag.text
+    return "Price not found"
+
+
+def fetch_articles(ticker):
+    """Fetches news articles related to the stock ticker."""
+    url = f"https://finance.yahoo.com/quote/{ticker}/"
+    response = requests.get(url)
+    
+    if response.status_code == 200:
+        soup = BeautifulSoup(response.content, "html.parser")
+        links = soup.find_all('a', class_='titles')
+        return [re.sub(CLEANR, '', str(link)) for link in links]
+    return []
+
+
+def analyze_sentiment(articles):
+    """Analyzes sentiment of article headlines."""
+    sentiments = []
+    for article in articles:
+        analysis = TextBlob(article)
+        sentiment_score = analysis.sentiment.polarity
+        sentiment = "Positive" if sentiment_score > 0 else "Negative" if sentiment_score < 0 else "Neutral"
+        sentiments.append((article, sentiment))
+    return sentiments
+
+
+def create_rankings(articles, ticker):
+    """Uses AI to rank articles."""
+    article_text = "\n".join([f"{i+1}. {a}" for i, a in enumerate(articles)])
     chat = client.chat.completions.create(
         model="deepseek/deepseek-r1:free",
         messages=[
-            {
-                "role": "user",
-                "content": f"Given these articles:\n{article_text}\nOnly return numbers 1-100 (1=worst, 100=best) in a numbered list (no explanation) for the future of {ticker} stock."
-            }
+            {"role": "user", "content": f"Given these articles:\n{article_text}\nOnly return numbers 1-100 (1=worst, 100=best) in a numbered list (no explanation) for the future of {ticker} stock."}
         ]
     )
-    
     return chat.choices[0].message.content
 
-if response.status_code == 200:
-    soup = BeautifulSoup(response.content, "html.parser")
-    links = soup.find_all('a', class_='titles')
 
-    # Extract and clean article titles
-    articles = [re.sub(CLEANR, '', str(link)) for link in links]
-    print(articles)
-    if articles:
-        rankings = create_rankings(articles, ticker)
-        print(f"Stock Ranking for {ticker}:\n{rankings}")
+def fetch_historical_prices(ticker):
+    """Fetches and plots historical stock prices."""
+    url = f"https://query1.finance.yahoo.com/v7/finance/download/{ticker}?period1=1640995200&period2=1672531200&interval=1d&events=history"
+    response = requests.get(url)
+    
+    if response.status_code == 200:
+        df = pd.read_csv(pd.compat.StringIO(response.text))
+        df['Date'] = pd.to_datetime(df['Date'])
+        plt.figure(figsize=(10, 5))
+        plt.plot(df['Date'], df['Close'], label=f'{ticker} Stock Price', color='blue')
+        plt.xlabel('Date')
+        plt.ylabel('Price (USD)')
+        plt.title(f'Historical Stock Prices for {ticker}')
+        plt.legend()
+        plt.grid()
+        plt.show()
     else:
-        print("No articles found.")
+        print("Failed to fetch historical data.")
 
-else:
-    print("Failed to retrieve the webpage:", response.status_code)
 
+if __name__ == "__main__":
+    tickers = input("Enter stock ticker symbols (comma-separated): ").upper().split(',')
+    for ticker in tickers:
+        ticker = ticker.strip()
+        print(f"\nFetching data for {ticker}...")
+        
+        price = fetch_stock_price(ticker)
+        print(f"Current Price: {price}")
+        
+        articles = fetch_articles(ticker)
+        if articles:
+            sentiments = analyze_sentiment(articles)
+            for article, sentiment in sentiments:
+                print(f"{article} - Sentiment: {sentiment}")
+            
+            rankings = create_rankings(articles, ticker)
+            print(f"Stock Ranking for {ticker}:\n{rankings}")
+        else:
+            print("No articles found.")
+        
+        fetch_historical_prices(ticker)
