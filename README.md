@@ -1,7 +1,13 @@
-This Python program fetches stock market data, analyzes new sentiment, and ranks articles using AI to help users make informed investment decisions. <br/>
-Features:
-Fetch real-time stock prices from Yahoo Finance. <br/>
-Retrieve relevant news articles about a given stock ticker. <br/>
-Analyze the sentiment of news headlines using TextBlob. <br/>
-Use AI to rank articles based on potential stock impact. <br/>
-Fetch and visualize historical stock prices using Yahoo Finance data.
+This Python program fetches stock‑market data, analyzes news sentiment, and ranks articles with AI to help investors make better‑informed decisions.
+
+Features
+
+Real‑time quotes – fetch the latest stock prices directly from Yahoo Finance.
+
+News retrieval – pull in recent news articles for any given ticker.
+
+Headline sentiment – analyze each headline’s tone using TextBlob.
+
+AI article ranking – score and rank stories by their potential impact on the stock.
+
+Historical price charts – download and visualize past price data from Yahoo Finance.
