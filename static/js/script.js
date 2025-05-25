@@ -1,5 +1,4 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // DOM elements
     const analyzeBtn = document.getElementById('analyzeBtn');
     const tickerInputContainer = document.getElementById('tickerInputContainer');
     const tickerInput = document.getElementById('tickerInput');
@@ -10,7 +9,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const chartContainer = document.getElementById('chartContainer');
     const articles = document.getElementById('articles');
     
-    // Chart instance
     let priceChart = null;
 
     // Event listeners
@@ -39,7 +37,6 @@ document.addEventListener('DOMContentLoaded', function() {
         loadingIndicator.classList.remove('hidden');
         results.classList.add('hidden');
         
-        // Clear previous results
         currentPrice.textContent = '';
         articles.innerHTML = '';
         if (priceChart) {
@@ -62,27 +59,21 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.error('Error fetching stock data:', error);
                 alert('Error fetching stock data. Please try again.');
                 
-                // Reset UI
                 loadingIndicator.classList.add('hidden');
                 analyzeBtn.classList.remove('hidden');
             });
     }
     
     function displayResults(data, ticker) {
-        // Hide loading indicator
         loadingIndicator.classList.add('hidden');
         results.classList.remove('hidden');
         
-        // Show the analyze button again for another search
         analyzeBtn.classList.remove('hidden');
         
-        // Display current price
         currentPrice.textContent = `$${data.current_price}`;
         
-        // Display chart
         displayChart(data.historical_prices, ticker);
         
-        // Display articles
         displayArticles(data.articles);
     }
     

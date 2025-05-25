@@ -15,13 +15,10 @@ def index():
 def analyze(ticker):
     ticker = ticker.strip().upper()
     
-    # Create a Ticker object
     stock = yf.Ticker(ticker)
     
-    # Get current price
     current_price = fetch_stock_price(stock)
     
-    # Get articles and sentiment
     articles_list = fetch_articles(stock)
     article_data = []
     
@@ -33,7 +30,6 @@ def analyze(ticker):
                 'sentiment': sentiment
             })
     
-    # Get historical prices
     historical_data = get_historical_data(stock)
     
     return jsonify({
@@ -45,7 +41,6 @@ def analyze(ticker):
 def fetch_stock_price(stock):
     """Gets the latest stock price using yfinance"""
     try:
-        # Get the latest market data
         info = stock.info
         return str(info.get('regularMarketPrice', 'Price not found'))
     except Exception as e:
@@ -55,10 +50,9 @@ def fetch_stock_price(stock):
 def fetch_articles(stock):
     """Gets news articles using yfinance"""
     try:
-        # Get news from yfinance
         news = stock.news
-        # Extract titles from news items (limit to 5 articles)
-        titles = [item['content']['title'] for item in news[:5]] if news else []
+        # Extract titles from news items (limit to 10 articles)
+        titles = [item['content']['title'] for item in news[:10]] if news else []
         return titles
     except Exception as e:
         print(f"Error fetching articles: {e}")
@@ -77,13 +71,10 @@ def analyze_sentiment(articles):
 def get_historical_data(stock):
     """Fetch historical stock price data for the chart using yfinance"""
     try:
-        # Get historical data for the past year
         end_date = datetime.now()
         start_date = end_date - timedelta(days=365)
         
         history = stock.history(start=start_date, end=end_date)
-        
-        # Format dates and prices for frontend
         dates = history.index.strftime('%Y-%m-%d').tolist()
         prices = history['Close'].tolist()
         
