@@ -1,4 +1,4 @@
-This Python program fetches stock‑market data, analyzes news sentiment, and ranks articles with AI to help investors make better‑informed decisions.
+This Python program fetches stock‑market data, analyzes news sentiment, and ranks articles with AI to help investors make better‑informed decisions. This program used to fetch articles directly from Yahoo Finance website; however, due to formatting changes in the website, the yFinance library is used to find data of a particular stock.
 
 <h2>Features</h2>
 <ul>
