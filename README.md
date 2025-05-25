@@ -1,10 +1,32 @@
-This Python program fetches stock‑market data, analyzes news sentiment, and ranks articles with AI to help investors make better‑informed decisions. This program used to fetch articles directly from Yahoo Finance website; however, due to formatting changes in the website, the yFinance library is used to find data of a particular stock.
+Fetch real‑time market data, pull the latest Yahoo Finance headlines, score each story’s sentiment, and let an LLM rank the news by its likely impact on the stock.
 
-<h2>Features</h2>
-<ul>
-  <li><strong>Real‑time quotes</strong> &mdash; fetch the latest stock prices directly from&nbsp;Yahoo Finance.</li>
-  <li><strong>News retrieval</strong> &mdash; pull in recent news articles for any specified ticker.</li>
-  <li><strong>Headline sentiment</strong> &mdash; analyze each headline&rsquo;s tone using&nbsp;TextBlob.</li>
-  <li><strong>AI article ranking</strong> &mdash; score and rank stories by their potential impact on the stock.</li>
-  <li><strong>Historical price charts</strong> &mdash; download and visualize past price data from&nbsp;Yahoo Finance.</li>
-</ul>
+> **Why another scraper?**  
+> Yahoo’s HTML keeps changing, so the project now relies on the much more stable *yfinance* JSON endpoints for prices **and** news items.  
+> Everything else—sentiment analysis, ranking, and charting—happens locally.
+
+## Features
+- **Real‑time quotes** – get the current price directly from Yahoo Finance.  
+- **News retrieval** – pull in up‑to‑the‑minute articles for any ticker.  
+- **Headline sentiment** – score each story with *TextBlob*.  
+- **AI article ranking** – call OpenAI to order stories by potential impact.  
+- **Historical charts** – visualize price history with Matplotlib. :contentReference[oaicite:0]{index=0}  
+
+## Quick‑start (CLI or Flask)
+
+```bash
+# 1. Clone & create an isolated env
+git clone https://github.com/blee1616/PythonWebScraper.git
+cd PythonWebScraper
+python -m venv .venv && source .venv/bin/activate        # Windows? .venv\Scripts\activate
+
+# 2. Install dependencies
+pip install -r requirements.txt
+
+# 3. Set your OpenAI key (bash)
+export OPENAI_API_KEY="sk‑..."
+
+# 4a. Run the Flask web app
+python app.py              # then open http://127.0.0.1:5000
+
+# 4b. —or— run the stand‑alone script
+python old.py --ticker AAPL --days 90
