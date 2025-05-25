@@ -9,7 +9,7 @@ Fetch real‑time market data, pull the latest Yahoo Finance headlines, score 
 - **News retrieval** – pull in up‑to‑the‑minute articles for any ticker.  
 - **Headline sentiment** – score each story with *TextBlob*.  
 - **AI article ranking** – call OpenAI to order stories by potential impact.  
-- **Historical charts** – visualize price history with Matplotlib. :contentReference[oaicite:0]{index=0}  
+- **Historical charts** – visualize price history with Matplotlib.
 
 ## Quick‑start (CLI or Flask)
 
